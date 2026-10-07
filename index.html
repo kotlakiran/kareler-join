@@ -623,6 +623,21 @@
       background: rgba(34, 184, 167, 0.35);
       color: #ffffff;
     }
+    .b-subemail {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .b-subemail code {
+      color: #c4b5fd;
+      background: rgba(139, 92, 246, 0.16);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      user-select: all;
+    }
 
     /* Feature Pills */
     .features-grid {
@@ -794,7 +809,7 @@
         <button class="beta-header" id="betaToggleBtn" type="button" aria-expanded="false">
           <div class="beta-header-left">
             <span class="badge-test">PLAY TEST</span>
-            <span>App not showing on Play Store?</span>
+            <span>Getting "Item not found"? Tap for Play Testing</span>
           </div>
           <svg class="beta-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
@@ -807,12 +822,13 @@
             <div class="beta-step">
               <div class="b-num">1</div>
               <div class="b-info">
-                <div class="b-title">Join Testers Google Group</div>
-                <div class="b-desc">Google Play requires your Google account to be in the testing group to see closed builds.</div>
-                <a class="b-link-btn b-btn-purple" id="groupLinkBtn" href="https://groups.google.com/g/kareler-testers" target="_blank" rel="noopener">
-                  <span>Join Google Group</span>
+                <div class="b-title">Join "testers-community" Google Group</div>
+                <div class="b-desc">To unlock the Play Store download and fix "Item not found", join this group using your Android phone's Google account:</div>
+                <a class="b-link-btn b-btn-purple" id="groupLinkBtn" href="https://groups.google.com/g/testers-community" target="_blank" rel="noopener">
+                  <span>Join testers-community Group</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                 </a>
+                <div class="b-subemail">Group email: <code>testers-community@googlegroups.com</code></div>
               </div>
             </div>
 
@@ -925,6 +941,8 @@
       } else {
         groupLinkBtn.href = `https://groups.google.com/g/${encodeURIComponent(rawGroup)}`;
       }
+    } else {
+      groupLinkBtn.href = 'https://groups.google.com/g/testers-community';
     }
 
     // Auto-expand beta instructions if requested via query param (?beta=1 or ?test=1)
@@ -937,6 +955,15 @@
       const isOpen = betaSection.classList.toggle('open');
       betaToggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     });
+
+    // If tester taps Google Play button, auto-open the beta guide so they see the fix if "Item not found" appears
+    const playStoreBtn = document.querySelector('a.btn-3d-secondary');
+    if (playStoreBtn) {
+      playStoreBtn.addEventListener('click', () => {
+        betaSection.classList.add('open');
+        betaToggleBtn.setAttribute('aria-expanded', 'true');
+      });
+    }
 
     // ------------------------------------------------------------
     // 2. Toast System
