@@ -2,40 +2,1185 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Join Kareler</title>
-  <meta name="theme-color" content="#0b1024">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Join Kareler • Dots & Boxes Arena</title>
+  
+  <!-- SEO & Social Open Graph -->
+  <meta name="description" content="You've been invited to join a private room in Kareler — the ultimate real-time 3D Dots & Boxes multiplayer game.">
+  <meta name="theme-color" content="#070c18">
+  <meta property="og:title" content="Join Kareler • Dots & Boxes Room">
+  <meta property="og:description" content="Your friend is waiting in a private Dots & Boxes room. Claim boxes and dominate the board!">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Kareler">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Join Kareler Board">
+  <meta name="twitter:description" content="Real-time Dots & Boxes duel invitation. Tap to play!">
+
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+
   <style>
-    :root { color-scheme: dark; font-family: Georgia, "Times New Roman", serif; }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; color: #f8fbff; background: radial-gradient(circle at 20% 10%, #183c72 0, transparent 34%), linear-gradient(145deg, #080c1c, #111936 58%, #092b38); }
-    main { width: min(92vw, 520px); padding: 34px 26px 30px; text-align: center; border: 1px solid rgba(94, 234, 212, .35); border-radius: 28px; background: rgba(11, 16, 36, .88); box-shadow: 0 24px 70px rgba(0, 0, 0, .38); }
-    .mark { width: 82px; height: 82px; margin: 0 auto 18px; display: grid; place-items: center; border-radius: 24px; font-size: 36px; font-weight: 900; color: #07111f; background: linear-gradient(145deg, #5eead4, #38bdf8); box-shadow: 0 12px 28px rgba(56, 189, 248, .28); }
-    h1 { margin: 0; font-size: clamp(30px, 8vw, 48px); letter-spacing: .02em; }
-    p { color: #b8c4dc; line-height: 1.55; }
-    .code { margin: 24px 0; padding: 15px; border: 1px solid rgba(251, 191, 36, .55); border-radius: 16px; color: #fbbf24; font: 900 26px/1.1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .16em; background: rgba(251, 191, 36, .10); }
-    a { display: block; margin-top: 14px; padding: 15px 18px; border-radius: 14px; color: #061321; font-weight: 900; text-decoration: none; background: linear-gradient(135deg, #5eead4, #38bdf8); }
-    a.secondary { color: #f8fbff; background: #202d4f; }
-    small { display: block; margin-top: 22px; color: #8190ae; }
+    :root {
+      --bg-dark: #070c18;
+      --bg-surface: rgba(14, 22, 42, 0.72);
+      --card-border: rgba(56, 189, 248, 0.22);
+      --card-border-glow: rgba(56, 189, 248, 0.45);
+      --cyan-neon: #00e5ff;
+      --cyan-glow: rgba(0, 229, 255, 0.4);
+      --teal-player: #22b8a7;
+      --coral-player: #ff6b6b;
+      --amber-accent: #fbbf24;
+      --amber-glow: rgba(251, 191, 36, 0.35);
+      --purple-accent: #8b5cf6;
+      --text-main: #f8fbff;
+      --text-muted: #94a3b8;
+      --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      background-color: var(--bg-dark);
+      background-image:
+        radial-gradient(ellipse 90% 70% at 50% -20%, rgba(30, 64, 175, 0.42), transparent 70%),
+        radial-gradient(ellipse 70% 50% at 85% 95%, rgba(139, 92, 246, 0.25), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 10% 80%, rgba(0, 229, 255, 0.18), transparent 50%),
+        linear-gradient(180deg, #060a15 0%, #091122 50%, #050812 100%);
+      overflow-x: hidden;
+      position: relative;
+      padding: 24px 16px;
+    }
+
+    /* Ambient cyber grid floor lines in background */
+    .bg-grid-perspective {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.18;
+      background-size: 40px 40px;
+      background-image:
+        linear-gradient(to right, rgba(56, 189, 248, 0.3) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.3) 1px, transparent 1px);
+      mask-image: radial-gradient(circle at 50% 40%, black 15%, transparent 70%);
+      -webkit-mask-image: radial-gradient(circle at 50% 40%, black 15%, transparent 70%);
+    }
+
+    /* Floating ambient glowing orbs */
+    .ambient-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+      animation: orbFloat 14s ease-in-out infinite alternate;
+    }
+    .orb-1 {
+      width: 320px;
+      height: 320px;
+      top: -60px;
+      left: 10%;
+      background: radial-gradient(circle, rgba(0, 229, 255, 0.25), transparent 70%);
+    }
+    .orb-2 {
+      width: 360px;
+      height: 360px;
+      bottom: -80px;
+      right: 5%;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.28), transparent 70%);
+      animation-delay: -7s;
+    }
+
+    @keyframes orbFloat {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(35px) scale(1.12); }
+    }
+
+    /* Main Container & 3D Tilt Wrapper */
+    .stage-wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 470px;
+      perspective: 1200px;
+    }
+
+    .main-card {
+      position: relative;
+      border-radius: 28px;
+      background: var(--bg-surface);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--card-border);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 24px 65px -12px rgba(0, 0, 0, 0.75),
+        0 0 60px -15px rgba(0, 229, 255, 0.22);
+      padding: 24px 22px 28px;
+      text-align: center;
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease;
+      transform-style: preserve-3d;
+      overflow: hidden;
+    }
+
+    /* Top glowing sheen line */
+    .card-top-light {
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan-neon), var(--purple-accent), transparent);
+      opacity: 0.85;
+    }
+
+    /* Header & Status */
+    .header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .brand-logo-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 5px 12px 5px 8px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #e2e8f0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+
+    .brand-logo-icon {
+      width: 20px;
+      height: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 2.5px;
+      padding: 1.5px;
+    }
+    .brand-logo-icon span {
+      border-radius: 2px;
+    }
+    .b-c1 { background: #ff6b6b; box-shadow: 0 0 6px rgba(255, 107, 107, 0.8); }
+    .b-c2 { background: #22b8a7; box-shadow: 0 0 6px rgba(34, 184, 167, 0.8); }
+    .b-c3 { background: #22b8a7; box-shadow: 0 0 6px rgba(34, 184, 167, 0.8); }
+    .b-c4 { background: #ff6b6b; box-shadow: 0 0 6px rgba(255, 107, 107, 0.8); }
+
+    .live-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fef3c7;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #fbbf24;
+      box-shadow: 0 0 8px #fbbf24;
+      animation: pulseAnim 1.6s infinite ease-in-out;
+    }
+
+    @keyframes pulseAnim {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.7); }
+    }
+
+    /* 3D Graphics Canvas Area */
+    .graphics-3d-container {
+      position: relative;
+      width: 100%;
+      height: 190px;
+      margin: 8px 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      touch-action: none;
+      cursor: grab;
+    }
+    .graphics-3d-container:active {
+      cursor: grabbing;
+    }
+
+    #board3dCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      filter: drop-shadow(0 14px 20px rgba(0, 0, 0, 0.5));
+    }
+
+    .interactive-tip {
+      position: absolute;
+      bottom: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(148, 163, 184, 0.7);
+      background: rgba(9, 14, 28, 0.6);
+      padding: 3px 8px;
+      border-radius: 6px;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Typography */
+    h1 {
+      font-size: clamp(24px, 6.5vw, 30px);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.18;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, #ffffff 40%, #bae6fd 80%, #7dd3fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .tagline {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 18px;
+      font-weight: 400;
+      padding: 0 8px;
+    }
+
+    /* 3D Room Code Box */
+    .code-plate {
+      position: relative;
+      margin: 0 0 20px;
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(16, 24, 46, 0.95), rgba(8, 14, 30, 0.95));
+      border: 1.5px solid rgba(251, 191, 36, 0.45);
+      box-shadow:
+        inset 0 2px 4px rgba(255, 255, 255, 0.08),
+        inset 0 -3px 8px rgba(0, 0, 0, 0.5),
+        0 12px 28px -6px rgba(251, 191, 36, 0.16);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .code-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #fcd34d;
+    }
+
+    .code-display {
+      font-family: var(--font-mono);
+      font-size: clamp(28px, 8.5vw, 36px);
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      color: #fbbf24;
+      text-shadow:
+        0 0 16px rgba(251, 191, 36, 0.55),
+        0 2px 4px rgba(0, 0, 0, 0.8);
+      padding: 2px 0;
+      transform: translateZ(10px);
+    }
+
+    .code-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .btn-copy-code {
+      flex: 1;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      color: #fef3c7;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-body);
+    }
+    .btn-copy-code:hover {
+      background: rgba(251, 191, 36, 0.22);
+      border-color: rgba(251, 191, 36, 0.6);
+      transform: translateY(-1px);
+    }
+    .btn-copy-code:active {
+      transform: translateY(1px);
+    }
+
+    .btn-share-link {
+      height: 38px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #bae6fd;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-body);
+    }
+    .btn-share-link:hover {
+      background: rgba(56, 189, 248, 0.2);
+      transform: translateY(-1px);
+    }
+    .btn-share-link:active {
+      transform: translateY(1px);
+    }
+
+    /* 3D Action Buttons */
+    .actions-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    /* Primary 3D Beveled Button */
+    .btn-3d-primary {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: 18px;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: #04101e;
+      background: linear-gradient(135deg, #00f5d4 0%, #38bdf8 50%, #60a5fa 100%);
+      border: none;
+      box-shadow:
+        0 6px 0 #0284c7,
+        0 14px 28px rgba(0, 229, 255, 0.36),
+        inset 0 1px 1px rgba(255, 255, 255, 0.6);
+      transform: translateY(0);
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .btn-3d-primary::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transform: rotate(25deg);
+      animation: sweepGlow 4s infinite linear;
+    }
+    @keyframes sweepGlow {
+      0% { left: -60%; }
+      30%, 100% { left: 140%; }
+    }
+    .btn-3d-primary:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 8px 0 #0284c7,
+        0 18px 34px rgba(0, 229, 255, 0.48),
+        inset 0 1px 1px rgba(255, 255, 255, 0.7);
+    }
+    .btn-3d-primary:active {
+      transform: translateY(5px);
+      box-shadow:
+        0 1px 0 #0284c7,
+        0 6px 14px rgba(0, 229, 255, 0.3),
+        inset 0 1px 1px rgba(255, 255, 255, 0.4);
+    }
+
+    /* Secondary 3D Glass Button */
+    .btn-3d-secondary {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      color: #f1f5f9;
+      background: linear-gradient(180deg, #18233c 0%, #10182b 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow:
+        0 4px 0 #0a101d,
+        0 8px 20px rgba(0, 0, 0, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      transform: translateY(0);
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .btn-3d-secondary:hover {
+      background: linear-gradient(180deg, #1e2c4d 0%, #141e35 100%);
+      border-color: rgba(56, 189, 248, 0.35);
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow:
+        0 5px 0 #0a101d,
+        0 10px 24px rgba(0, 0, 0, 0.5);
+    }
+    .btn-3d-secondary:active {
+      transform: translateY(3px);
+      box-shadow:
+        0 1px 0 #0a101d,
+        0 4px 10px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Feature Pills */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .feature-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.45);
+      padding: 9px 4px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .feature-icon {
+      font-size: 16px;
+    }
+    .feature-text {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #cbd5e1;
+      letter-spacing: 0.02em;
+    }
+
+    /* Footer / Helper Note */
+    .footer-note {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    /* Floating Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(70px);
+      background: #0f172a;
+      border: 1px solid #38bdf8;
+      color: #f8fafc;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 999;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Fallback banner modal/hint */
+    .fallback-hint {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: rgba(30, 41, 59, 0.7);
+      border-radius: 12px;
+      border-left: 3px solid #38bdf8;
+      text-align: left;
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body>
-  <main>
-    <div class="mark">K</div>
-    <h1>Join the Kareler board</h1>
-    <p id="message">Your friend is waiting for you in a private Dots &amp; Boxes room.</p>
-    <div class="code" id="code">ROOM</div>
-    <a id="open" href="#">OPEN KARELER</a>
-    <a class="secondary" href="https://play.google.com/store/apps/details?id=com.kirankotla.kareler">GET KARELER ON GOOGLE PLAY</a>
-    <small>Play together. Claim the most boxes.</small>
-  </main>
+
+  <div class="bg-grid-perspective"></div>
+  <div class="ambient-orb orb-1"></div>
+  <div class="ambient-orb orb-2"></div>
+
+  <div class="stage-wrapper" id="stageWrapper">
+    <main class="main-card" id="mainCard">
+      <div class="card-top-light"></div>
+
+      <!-- Top Header -->
+      <div class="header-bar">
+        <div class="brand-logo-pill">
+          <div class="brand-logo-icon">
+            <span class="b-c1"></span>
+            <span class="b-c2"></span>
+            <span class="b-c3"></span>
+            <span class="b-c4"></span>
+          </div>
+          <span>KARELER</span>
+        </div>
+        <div class="live-status-badge">
+          <span class="pulse-dot"></span>
+          <span>LIVE ROOM</span>
+        </div>
+      </div>
+
+      <!-- 3D Graphics Canvas Arena -->
+      <div class="graphics-3d-container" id="graphicsContainer" title="Drag to rotate 3D game board">
+        <canvas id="board3dCanvas"></canvas>
+        <div class="interactive-tip">✦ 3D Dots &amp; Boxes Arena • Drag to rotate</div>
+      </div>
+
+      <!-- Headlines -->
+      <h1>Join the Kareler Board</h1>
+      <p class="tagline" id="message">Your friend is waiting for you in a private Dots &amp; Boxes room. Claim boxes to win!</p>
+
+      <!-- 3D Room Code Display -->
+      <div class="code-plate">
+        <div class="code-label-row">
+          <span>Private Match Code</span>
+          <span id="roomStatus">Ready to connect</span>
+        </div>
+        <div class="code-display" id="code">ROOM</div>
+        <div class="code-actions">
+          <button class="btn-copy-code" id="btnCopy" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="copyBtnText">Copy Code</span>
+          </button>
+          <button class="btn-share-link" id="btnShare" type="button" title="Share invite link">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>Share</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3D Action Buttons -->
+      <div class="actions-stack">
+        <a id="openAppBtn" class="btn-3d-primary" href="#">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span>OPEN IN KARELER APP</span>
+        </a>
+
+        <a class="btn-3d-secondary" href="https://play.google.com/store/apps/details?id=com.kirankotla.kareler" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M3.609 1.814L13.793 12 3.61 22.186A2.298 2.298 0 0 1 3 20.613V3.387c0-.623.232-1.2.609-1.573z" fill="#00E5FF"/>
+            <path d="M17.29 8.503l-3.497 3.497 3.497 3.497 3.93-2.247c1.12-.64 1.12-1.857 0-2.5l-3.93-2.247z" fill="#FFD54F"/>
+            <path d="M3.609 1.814C4.168 1.255 5.093 1.29 6.07 1.85l11.22 6.653-3.497 3.497L3.609 1.814z" fill="#00E676"/>
+            <path d="M13.793 12l3.497 3.497-11.22 6.653c-.977.56-1.902.595-2.461.036L13.793 12z" fill="#FF1744"/>
+          </svg>
+          <span>GET KARELER ON GOOGLE PLAY</span>
+        </a>
+      </div>
+
+      <!-- App not opening hint -->
+      <div class="fallback-hint" id="fallbackHint">
+        💡 <strong>Opening the app...</strong> If Kareler doesn't launch automatically, tap <strong>Get Kareler on Google Play</strong> to install it, then use the room code above!
+      </div>
+
+      <!-- Feature Badges -->
+      <div class="features-grid">
+        <div class="feature-item">
+          <span class="feature-icon">⚡</span>
+          <span class="feature-text">Live 1v1 Play</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🟦</span>
+          <span class="feature-text">Claim Boxes</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🏆</span>
+          <span class="feature-text">Ranked Duels</span>
+        </div>
+      </div>
+
+      <p class="footer-note">Play together anywhere • Built for fast real-time tactics</p>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span id="toastMsg">Code copied to clipboard!</span>
+  </div>
+
+  <!-- Interactive 3D Graphics Engine & Page Logic -->
   <script>
-    const params = new URLSearchParams(location.search);
-    const code = (params.get('code') || '').trim().toUpperCase();
-    document.getElementById('code').textContent = code || 'ROOM CODE';
-    const appUrl = `kareler://join?code=${encodeURIComponent(code)}`;
-    document.getElementById('open').href = appUrl;
-    if (!code) document.getElementById('message').textContent = 'Open a shared Kareler room link to join the game.';
+    // ------------------------------------------------------------
+    // 1. URL Parameter Parsing & Deep Link Setup
+    // ------------------------------------------------------------
+    const params = new URLSearchParams(window.location.search);
+    const rawCode = (params.get('code') || '').trim();
+    const code = rawCode.toUpperCase();
+    const codeElement = document.getElementById('code');
+    const messageElement = document.getElementById('message');
+    const roomStatusElement = document.getElementById('roomStatus');
+    const openAppBtn = document.getElementById('openAppBtn');
+    const fallbackHint = document.getElementById('fallbackHint');
+
+    if (code) {
+      codeElement.textContent = code;
+      const appUrl = `kareler://join?code=${encodeURIComponent(code)}`;
+      openAppBtn.href = appUrl;
+      roomStatusElement.textContent = 'Room ' + code;
+    } else {
+      codeElement.textContent = 'ROOM CODE';
+      openAppBtn.href = 'kareler://';
+      messageElement.textContent = 'Open or install Kareler to join real-time multiplayer boards.';
+      roomStatusElement.textContent = 'No code specified';
+    }
+
+    // App launch fallback handler
+    openAppBtn.addEventListener('click', () => {
+      setTimeout(() => {
+        fallbackHint.style.display = 'block';
+      }, 1400);
+    });
+
+    // ------------------------------------------------------------
+    // 2. Toast System
+    // ------------------------------------------------------------
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    let toastTimer = null;
+
+    function showToast(text) {
+      toastMsg.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2400);
+    }
+
+    // ------------------------------------------------------------
+    // 3. Copy Code & Native Share
+    // ------------------------------------------------------------
+    const btnCopy = document.getElementById('btnCopy');
+    const copyBtnText = document.getElementById('copyBtnText');
+
+    btnCopy.addEventListener('click', async () => {
+      const codeToCopy = code || 'KARELER';
+      try {
+        await navigator.clipboard.writeText(codeToCopy);
+        copyBtnText.textContent = 'Copied! ✓';
+        showToast(`Code "${codeToCopy}" copied!`);
+        setTimeout(() => {
+          copyBtnText.textContent = 'Copy Code';
+        }, 2000);
+      } catch (e) {
+        // Fallback for older browsers
+        const temp = document.createElement('input');
+        temp.value = codeToCopy;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+        showToast(`Code "${codeToCopy}" copied!`);
+      }
+    });
+
+    const btnShare = document.getElementById('btnShare');
+    btnShare.addEventListener('click', async () => {
+      const shareUrl = window.location.href;
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'Join my Kareler Dots & Boxes room!',
+            text: `Join my Kareler match using code: ${code || 'JOIN'}!`,
+            url: shareUrl
+          });
+        } catch (err) {
+          // User dismissed or share failed
+        }
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        showToast('Invite link copied to clipboard!');
+      }
+    });
+
+    // ------------------------------------------------------------
+    // 4. Card 3D Parallax Tilt Effect
+    // ------------------------------------------------------------
+    const stageWrapper = document.getElementById('stageWrapper');
+    const mainCard = document.getElementById('mainCard');
+
+    if (window.matchMedia('(hover: hover)').matches) {
+      stageWrapper.addEventListener('mousemove', (e) => {
+        const rect = mainCard.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        const rotY = (x / (rect.width / 2)) * 6.5;
+        const rotX = -(y / (rect.height / 2)) * 6.5;
+        mainCard.style.transform = `rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
+      });
+
+      stageWrapper.addEventListener('mouseleave', () => {
+        mainCard.style.transform = 'rotateX(0deg) rotateY(0deg)';
+      });
+    }
+
+    // ------------------------------------------------------------
+    // 5. World-Class Real-Time 3D Isometric Dots & Boxes Canvas Engine
+    // ------------------------------------------------------------
+    const canvas = document.getElementById('board3dCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('graphicsContainer');
+
+    function resizeCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = container.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // 3D Engine Math & State
+    let angleX = 0.95; // ~54 degrees tilt
+    let angleZ = -0.68; // isometric orientation
+    let targetAngleX = angleX;
+    let targetAngleZ = angleZ;
+    let isDragging = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    let autoRotationSpeed = 0.0035;
+
+    // Board Model (3x3 dots = 2x2 playable boxes, authentic Kareler grid)
+    const GRID_SIZE = 3;
+    const SPACING = 68;
+
+    // Completed boxes in the 3D model
+    const boxes = [
+      { r: 0, c: 0, color: '#22B8A7', glow: 'rgba(34,184,167,0.7)', label: 'P1', height: 16 },
+      { r: 0, c: 1, color: '#FF6B6B', glow: 'rgba(255,107,107,0.7)', label: 'P2', height: 14 },
+      { r: 1, c: 0, color: '#FF6B6B', glow: 'rgba(255,107,107,0.7)', label: 'P2', height: 14 },
+      { r: 1, c: 1, color: '#FBBF24', glow: 'rgba(251,191,36,0.85)', label: '★', height: 20 }
+    ];
+
+    // Edges connected
+    const edges = [
+      // Horizontals
+      { r1: 0, c1: 0, r2: 0, c2: 1, color: '#22B8A7' },
+      { r1: 0, c1: 1, r2: 0, c2: 2, color: '#FF6B6B' },
+      { r1: 1, c1: 0, r2: 1, c2: 1, color: '#00E5FF' },
+      { r1: 1, c1: 1, r2: 1, c2: 2, color: '#FBBF24' },
+      { r1: 2, c1: 0, r2: 2, c2: 1, color: '#FF6B6B' },
+      { r1: 2, c1: 1, r2: 2, c2: 2, color: '#FBBF24' },
+      // Verticals
+      { r1: 0, c1: 0, r2: 1, c2: 0, color: '#22B8A7' },
+      { r1: 0, c1: 1, r2: 1, c2: 1, color: '#00E5FF' },
+      { r1: 0, c1: 2, r2: 1, c2: 2, color: '#FF6B6B' },
+      { r1: 1, c1: 0, r2: 2, c2: 0, color: '#FF6B6B' },
+      { r1: 1, c1: 1, r2: 2, c2: 1, color: '#FBBF24' },
+      { r1: 1, c1: 2, r2: 2, c2: 2, color: '#FBBF24' },
+    ];
+
+    // Floating particles around the 3D board
+    const particles = Array.from({ length: 24 }, () => ({
+      x: (Math.random() - 0.5) * 220,
+      y: (Math.random() - 0.5) * 220,
+      z: (Math.random() - 0.5) * 60 + 20,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      vz: Math.random() * 0.4 + 0.2,
+      size: Math.random() * 2 + 1,
+      color: Math.random() > 0.5 ? '#00e5ff' : '#fbbf24'
+    }));
+
+    // Mouse & Touch 3D Drag Rotation
+    container.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+      targetAngleZ += dx * 0.009;
+      targetAngleX = Math.max(0.4, Math.min(1.4, targetAngleX + dy * 0.009));
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    // Mobile Touch interaction
+    container.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        lastMouseX = e.touches[0].clientX;
+        lastMouseY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    container.addEventListener('touchmove', (e) => {
+      if (!isDragging || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - lastMouseX;
+      const dy = e.touches[0].clientY - lastMouseY;
+      lastMouseX = e.touches[0].clientX;
+      lastMouseY = e.touches[0].clientY;
+      targetAngleZ += dx * 0.012;
+      targetAngleX = Math.max(0.4, Math.min(1.4, targetAngleX + dy * 0.012));
+    }, { passive: true });
+
+    container.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+
+    // 3D Projection Helper
+    function project3D(x, y, z, cx, cy, f = 340) {
+      // Rotate around Z (yaw)
+      const cosZ = Math.cos(angleZ);
+      const sinZ = Math.sin(angleZ);
+      const rx = x * cosZ - y * sinZ;
+      const ry = x * sinZ + y * cosZ;
+
+      // Rotate around X (pitch)
+      const cosX = Math.cos(angleX);
+      const sinX = Math.sin(angleX);
+      const ry2 = ry * cosX - z * sinX;
+      const rz2 = ry * sinX + z * cosX;
+
+      // Perspective projection
+      const cameraDist = 320;
+      const scale = f / (cameraDist + rz2);
+      return {
+        px: cx + rx * scale,
+        py: cy + ry2 * scale,
+        depth: rz2,
+        scale: scale
+      };
+    }
+
+    // Render Loop
+    let time = 0;
+    function render() {
+      requestAnimationFrame(render);
+      time += 0.018;
+
+      // Smooth interpolation & gentle idle sway
+      if (!isDragging) {
+        targetAngleZ += autoRotationSpeed;
+      }
+      angleZ += (targetAngleZ - angleZ) * 0.08;
+      angleX += (targetAngleX - angleX) * 0.08;
+
+      const rect = container.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const cx = w / 2;
+      const cy = h / 2 + 6;
+
+      // Board float oscillation
+      const floatZ = Math.sin(time * 1.5) * 5;
+
+      // 1. Draw 3D Platform Pedestal Shadow
+      ctx.save();
+      const shadowGrad = ctx.createRadialGradient(cx, cy + 50, 10, cx, cy + 50, 120);
+      shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.65)');
+      shadowGrad.addColorStop(0.5, 'rgba(0, 229, 255, 0.15)');
+      shadowGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = shadowGrad;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + 50, 110, 42, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // 2. Draw 3D Base Slab (Arena platform)
+      const baseHalf = (GRID_SIZE - 1) * SPACING * 0.5 + 24;
+      const baseThickness = 12;
+
+      const baseTopCorners = [
+        project3D(-baseHalf, -baseHalf, floatZ - 4, cx, cy),
+        project3D(baseHalf, -baseHalf, floatZ - 4, cx, cy),
+        project3D(baseHalf, baseHalf, floatZ - 4, cx, cy),
+        project3D(-baseHalf, baseHalf, floatZ - 4, cx, cy)
+      ];
+
+      const baseBottomCorners = [
+        project3D(-baseHalf, -baseHalf, floatZ - 4 - baseThickness, cx, cy),
+        project3D(baseHalf, -baseHalf, floatZ - 4 - baseThickness, cx, cy),
+        project3D(baseHalf, baseHalf, floatZ - 4 - baseThickness, cx, cy),
+        project3D(-baseHalf, baseHalf, floatZ - 4 - baseThickness, cx, cy)
+      ];
+
+      // Draw sides of pedestal
+      for (let i = 0; i < 4; i++) {
+        const next = (i + 1) % 4;
+        ctx.beginPath();
+        ctx.moveTo(baseTopCorners[i].px, baseTopCorners[i].py);
+        ctx.lineTo(baseTopCorners[next].px, baseTopCorners[next].py);
+        ctx.lineTo(baseBottomCorners[next].px, baseBottomCorners[next].py);
+        ctx.lineTo(baseBottomCorners[i].px, baseBottomCorners[i].py);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(10, 18, 36, 0.95)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // Draw Top Face of Pedestal
+      ctx.beginPath();
+      ctx.moveTo(baseTopCorners[0].px, baseTopCorners[0].py);
+      for (let i = 1; i < 4; i++) {
+        ctx.lineTo(baseTopCorners[i].px, baseTopCorners[i].py);
+      }
+      ctx.closePath();
+      const platGrad = ctx.createLinearGradient(
+        baseTopCorners[0].px, baseTopCorners[0].py,
+        baseTopCorners[2].px, baseTopCorners[2].py
+      );
+      platGrad.addColorStop(0, '#131e36');
+      platGrad.addColorStop(0.5, '#0e172a');
+      platGrad.addColorStop(1, '#152442');
+      ctx.fillStyle = platGrad;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // 3. Draw 3D Captured "Kareler" Boxes (Extruded cubes with glowing tops)
+      boxes.forEach(box => {
+        const boxX1 = (box.c - (GRID_SIZE - 1) / 2) * SPACING + 5;
+        const boxY1 = (box.r - (GRID_SIZE - 1) / 2) * SPACING + 5;
+        const boxX2 = boxX1 + SPACING - 10;
+        const boxY2 = boxY1 + SPACING - 10;
+        const h3d = box.height + Math.sin(time * 3 + box.c + box.r) * 2;
+
+        const b1 = project3D(boxX1, boxY1, floatZ, cx, cy);
+        const b2 = project3D(boxX2, boxY1, floatZ, cx, cy);
+        const b3 = project3D(boxX2, boxY2, floatZ, cx, cy);
+        const b4 = project3D(boxX1, boxY2, floatZ, cx, cy);
+
+        const t1 = project3D(boxX1, boxY1, floatZ + h3d, cx, cy);
+        const t2 = project3D(boxX2, boxY1, floatZ + h3d, cx, cy);
+        const t3 = project3D(boxX2, boxY2, floatZ + h3d, cx, cy);
+        const t4 = project3D(boxX1, boxY2, floatZ + h3d, cx, cy);
+
+        // Sides
+        const sides = [
+          [t1, t2, b2, b1],
+          [t2, t3, b3, b2],
+          [t3, t4, b4, b3],
+          [t4, t1, b1, b4]
+        ];
+        sides.forEach(poly => {
+          ctx.beginPath();
+          ctx.moveTo(poly[0].px, poly[0].py);
+          for (let p = 1; p < 4; p++) ctx.lineTo(poly[p].px, poly[p].py);
+          ctx.closePath();
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+          ctx.fill();
+          ctx.strokeStyle = box.color + '44';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        });
+
+        // Top glowing face
+        ctx.beginPath();
+        ctx.moveTo(t1.px, t1.py);
+        ctx.lineTo(t2.px, t2.py);
+        ctx.lineTo(t3.px, t3.py);
+        ctx.lineTo(t4.px, t4.py);
+        ctx.closePath();
+        ctx.fillStyle = box.color + '38';
+        ctx.fill();
+        ctx.strokeStyle = box.color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Box Badge / Label in 3D center
+        const centerTop = project3D((boxX1 + boxX2) / 2, (boxY1 + boxY2) / 2, floatZ + h3d + 1, cx, cy);
+        ctx.save();
+        ctx.font = `800 ${Math.round(11 * centerTop.scale * 1.5)}px Outfit, sans-serif`;
+        ctx.fillStyle = box.color;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = box.color;
+        ctx.shadowBlur = 8;
+        ctx.fillText(box.label, centerTop.px, centerTop.py);
+        ctx.restore();
+      });
+
+      // 4. Draw Glowing 3D Connected Laser Edges
+      edges.forEach(edge => {
+        const x1 = (edge.c1 - (GRID_SIZE - 1) / 2) * SPACING;
+        const y1 = (edge.r1 - (GRID_SIZE - 1) / 2) * SPACING;
+        const x2 = (edge.c2 - (GRID_SIZE - 1) / 2) * SPACING;
+        const y2 = (edge.r2 - (GRID_SIZE - 1) / 2) * SPACING;
+
+        const p1 = project3D(x1, y1, floatZ + 2, cx, cy);
+        const p2 = project3D(x2, y2, floatZ + 2, cx, cy);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(p1.px, p1.py);
+        ctx.lineTo(p2.px, p2.py);
+        ctx.strokeStyle = edge.color;
+        ctx.lineWidth = 3.5 * ((p1.scale + p2.scale) / 2);
+        ctx.lineCap = 'round';
+        ctx.shadowColor = edge.color;
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+
+        // High-intensity white core laser line
+        ctx.beginPath();
+        ctx.moveTo(p1.px, p1.py);
+        ctx.lineTo(p2.px, p2.py);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.2 * ((p1.scale + p2.scale) / 2);
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // 5. Draw 3D Metallic Grid Pins / Dots
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const x = (c - (GRID_SIZE - 1) / 2) * SPACING;
+          const y = (r - (GRID_SIZE - 1) / 2) * SPACING;
+          const dotP = project3D(x, y, floatZ + 4, cx, cy);
+
+          // Dot Stem/Shadow
+          const dotBottom = project3D(x, y, floatZ, cx, cy);
+          ctx.beginPath();
+          ctx.moveTo(dotP.px, dotP.py);
+          ctx.lineTo(dotBottom.px, dotBottom.py);
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.5)';
+          ctx.lineWidth = 2 * dotP.scale;
+          ctx.stroke();
+
+          // Spherical 3D Pin Head
+          const radius = 5.2 * dotP.scale;
+          ctx.save();
+          const dotGrad = ctx.createRadialGradient(
+            dotP.px - radius * 0.35, dotP.py - radius * 0.45, radius * 0.1,
+            dotP.px, dotP.py, radius
+          );
+          dotGrad.addColorStop(0, '#ffffff');
+          dotGrad.addColorStop(0.35, '#38bdf8');
+          dotGrad.addColorStop(0.85, '#0284c7');
+          dotGrad.addColorStop(1, '#0c4a6e');
+
+          ctx.fillStyle = dotGrad;
+          ctx.beginPath();
+          ctx.arc(dotP.px, dotP.py, radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.shadowColor = '#00e5ff';
+          ctx.shadowBlur = 8;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      // 6. Draw 3D Floating Dust Particles
+      particles.forEach(p => {
+        p.z += p.vz;
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.z > 70) p.z = -20;
+
+        const pt = project3D(p.x, p.y, floatZ + p.z, cx, cy);
+        ctx.save();
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(pt.px, pt.py, p.size * pt.scale, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+    render();
   </script>
 </body>
 </html>
