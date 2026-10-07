@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Join Kareler</title>
+  <meta name="theme-color" content="#0b1024">
+  <style>
+    :root { color-scheme: dark; font-family: Georgia, "Times New Roman", serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; color: #f8fbff; background: radial-gradient(circle at 20% 10%, #183c72 0, transparent 34%), linear-gradient(145deg, #080c1c, #111936 58%, #092b38); }
+    main { width: min(92vw, 520px); padding: 34px 26px 30px; text-align: center; border: 1px solid rgba(94, 234, 212, .35); border-radius: 28px; background: rgba(11, 16, 36, .88); box-shadow: 0 24px 70px rgba(0, 0, 0, .38); }
+    .mark { width: 82px; height: 82px; margin: 0 auto 18px; display: grid; place-items: center; border-radius: 24px; font-size: 36px; font-weight: 900; color: #07111f; background: linear-gradient(145deg, #5eead4, #38bdf8); box-shadow: 0 12px 28px rgba(56, 189, 248, .28); }
+    h1 { margin: 0; font-size: clamp(30px, 8vw, 48px); letter-spacing: .02em; }
+    p { color: #b8c4dc; line-height: 1.55; }
+    .code { margin: 24px 0; padding: 15px; border: 1px solid rgba(251, 191, 36, .55); border-radius: 16px; color: #fbbf24; font: 900 26px/1.1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .16em; background: rgba(251, 191, 36, .10); }
+    a { display: block; margin-top: 14px; padding: 15px 18px; border-radius: 14px; color: #061321; font-weight: 900; text-decoration: none; background: linear-gradient(135deg, #5eead4, #38bdf8); }
+    a.secondary { color: #f8fbff; background: #202d4f; }
+    small { display: block; margin-top: 22px; color: #8190ae; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="mark">K</div>
+    <h1>Join the Kareler board</h1>
+    <p id="message">Your friend is waiting for you in a private Dots &amp; Boxes room.</p>
+    <div class="code" id="code">ROOM</div>
+    <a id="open" href="#">OPEN KARELER</a>
+    <a class="secondary" href="https://play.google.com/store/apps/details?id=com.kirankotla.kareler">GET KARELER ON GOOGLE PLAY</a>
+    <small>Play together. Claim the most boxes.</small>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const code = (params.get('code') || '').trim().toUpperCase();
+    document.getElementById('code').textContent = code || 'ROOM CODE';
+    const appUrl = `kareler://join?code=${encodeURIComponent(code)}`;
+    document.getElementById('open').href = appUrl;
+    if (!code) document.getElementById('message').textContent = 'Open a shared Kareler room link to join the game.';
+  </script>
+</body>
+</html>
